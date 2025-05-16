@@ -38,9 +38,5 @@ public class ServerService {
         sb.append("Number of Threads: ").append(os.getThreadCount()).append("\n");
         return sb.toString();
     }
-    @PostConstruct
-    public void demo (){
-        String data = getOsInfoString();
-        System.out.println(data);
-    }
+
 }
