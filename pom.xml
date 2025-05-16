@@ -110,6 +110,12 @@
             <artifactId>jna</artifactId>
             <version>5.13.0</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.30</version>
+        </dependency>
 
 
     </dependencies>
