@@ -49,3 +49,12 @@ java -jar target/vaadin-1.0-SNAPSHOT.jar
 - Find add-ons at [vaadin.com/directory](https://vaadin.com/directory).
 - Ask questions on [Stack Overflow](https://stackoverflow.com/questions/tagged/vaadin) or join our [Forum](https://vaadin.com/forum).
 - Report issues, create pull requests in [GitHub](https://github.com/vaadin).
+
+
+## database H2
+- View database [http://localhost:8080/h2-console](http://localhost:8080/h2-console).
+
+Cấu hình loggin view databse trong file properties
+- JDBC URL: jdbc:h2:file:./data/h2-db
+- user: sa
+- pass:
