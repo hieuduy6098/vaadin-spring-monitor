@@ -25,17 +25,17 @@ public class ServerService {
      */
     public ServerModel getOsInfoString() {
         return ServerModel.builder()
-                .manufacturer(os.getManufacturer())
-                .family(os.getFamily())
-                .version(os.getVersionInfo().getVersion())
-                .buildNumber(os.getVersionInfo().getBuildNumber())
-                .codeName(os.getVersionInfo().getCodeName())
-                .operatingSystemArchitecture(os.getBitness())
-                .pid(os.getProcessId())
-                .systemUptime(TimeUtils.formatUptime(os.getSystemUptime()))
-                .systemBootTime(os.getSystemBootTime())
-                .numberOfProcesses(os.getProcessCount())
-                .numberOfThreads(os.getThreadCount())
-                .build();
+            .manufacturer(os.getManufacturer())
+            .family(os.getFamily())
+            .version(os.getVersionInfo().getVersion())
+            .buildNumber(os.getVersionInfo().getBuildNumber())
+            .codeName(os.getVersionInfo().getCodeName())
+            .operatingSystemArchitecture(os.getBitness())
+            .pid(os.getProcessId())
+            .systemUptime(TimeUtils.formatUptime(os.getSystemUptime()))
+            .systemBootTime(os.getSystemBootTime())
+            .numberOfProcesses(os.getProcessCount())
+            .numberOfThreads(os.getThreadCount())
+            .build();
     }
 }
