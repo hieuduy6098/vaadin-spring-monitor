@@ -6,7 +6,6 @@ import oshi.hardware.HWPartition;
 import java.util.List;
 import static com.az1.app.utils.ConvertSizeUtils.formatSize;
 
-@Service
 public class DiskService extends ServerService {
     /**
      * Retrieves detailed information about all disk stores (physical disks) and their respective partitions,

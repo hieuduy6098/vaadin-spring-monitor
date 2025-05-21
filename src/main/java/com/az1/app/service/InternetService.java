@@ -7,7 +7,6 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
 public class InternetService extends ServerService {
     /**
      * Retrieves detailed information about all available network interfaces.

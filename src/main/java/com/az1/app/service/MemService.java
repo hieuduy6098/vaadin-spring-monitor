@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 
 import static com.az1.app.utils.ConvertSizeUtils.formatSize;
 
-@Service
 public class MemService extends ServerService {
     // Reference to the system's global memory information
     private final GlobalMemory memory = hardware.getMemory();

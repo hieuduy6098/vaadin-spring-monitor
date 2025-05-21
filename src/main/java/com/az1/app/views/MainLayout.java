@@ -2,12 +2,12 @@ package com.az1.app.views;
 
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
-import com.vaadin.flow.component.html.Footer;
-import com.vaadin.flow.component.html.H1;
-import com.vaadin.flow.component.html.Header;
-import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.SvgIcon;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.Scroller;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
 import com.vaadin.flow.router.Layout;
@@ -43,9 +43,24 @@ public class MainLayout extends AppLayout {
     }
 
     private void addDrawerContent() {
-        Span appName = new Span("az1");
+        // 1. Tạo logo từ file trong thư mục resources
+        Image logo = new Image("icons/logo.jpg", "App Logo"); // Đảm bảo có file logo.png trong resources/public/images/
+        logo.setWidth("100px"); // Kích thước logo
+        logo.setHeight("100px");
+
+        Span appName = new Span("");
         appName.addClassNames(LumoUtility.FontWeight.SEMIBOLD, LumoUtility.FontSize.LARGE);
-        Header header = new Header(appName);
+
+        // 3. Đặt logo và tên vào một layout nhỏ và căn giữa
+        HorizontalLayout titleLayout = new HorizontalLayout(logo, appName);
+        titleLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+        titleLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
+        titleLayout.setPadding(false);
+        titleLayout.setSpacing(false);
+
+        // 4. Tạo header với layout chứa logo + tên
+        Header header = new Header(titleLayout);
+        header.addClassNames(LumoUtility.Padding.MEDIUM);
 
         Scroller scroller = new Scroller(createNavigation());
 

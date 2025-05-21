@@ -12,7 +12,6 @@ import com.az1.app.utils.TimeUtils;
  * A service class that provides access to server-related system information.
  * This class uses the OSHI library to retrieve operating system and hardware details.
  */
-@Service
 public class ServerService {
     protected final SystemInfo systemInfo = new SystemInfo();
     protected final OperatingSystem os = new SystemInfo().getOperatingSystem();
@@ -23,7 +22,7 @@ public class ServerService {
      *
      * @return ServerModel containing OS details such as manufacturer, version, uptime, and process/thread counts.
      */
-    public ServerModel getOsInfoString() {
+    public ServerModel getOsInfo() {
         return ServerModel.builder()
             .manufacturer(os.getManufacturer())
             .family(os.getFamily())

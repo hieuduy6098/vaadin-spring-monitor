@@ -19,6 +19,6 @@ public class CpuModel {
     private String vendor;
     private long vendorFrequency;
     private int logicalProcessors;
-    private String physicalPackages;
-    private String physicalCores;
+    private int physicalPackages;
+    private int physicalCores;
 }

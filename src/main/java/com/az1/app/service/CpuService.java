@@ -1,12 +1,12 @@
 package com.az1.app.service;
 
+import com.az1.app.model.CpuModel;
 import org.springframework.stereotype.Service;
 import oshi.hardware.CentralProcessor;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-@Service
 public class CpuService extends ServerService {
 
     private final CentralProcessor processor = hardware.getProcessor();
@@ -113,19 +113,19 @@ public class CpuService extends ServerService {
      *
      * @return A string containing detailed CPU information.
      */
-    public String getCpuInfoString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Processor: ").append(processor.getProcessorIdentifier().getName()).append("\n");
-        sb.append("Identifier: ").append(processor.getProcessorIdentifier().getIdentifier()).append("\n");
-        sb.append("Family: ").append(processor.getProcessorIdentifier().getFamily()).append("\n");
-        sb.append("Model: ").append(processor.getProcessorIdentifier().getModel()).append("\n");
-        sb.append("Stepping: ").append(processor.getProcessorIdentifier().getStepping()).append("\n");
-        sb.append("Microarchitecture: ").append(processor.getProcessorIdentifier().getMicroarchitecture()).append("\n");
-        sb.append("Vendor: ").append(processor.getProcessorIdentifier().getVendor()).append("\n");
-        sb.append("Vendor Frequency: ").append(processor.getProcessorIdentifier().getVendorFreq()).append("\n");
-        sb.append("Logical Processors: ").append(processor.getLogicalProcessorCount()).append("\n");
-        sb.append("Physical Packages: ").append(processor.getPhysicalPackageCount()).append("\n");
-        sb.append("Physical Cores: ").append(processor.getPhysicalProcessorCount()).append("\n");
-        return sb.toString();
+    public CpuModel getCpuInfo() {
+        return CpuModel.builder()
+                .processor(processor.getProcessorIdentifier().getName())
+                .identifier(processor.getProcessorIdentifier().getIdentifier())
+                .family(processor.getProcessorIdentifier().getFamily())
+                .model(processor.getProcessorIdentifier().getModel())
+                .stepping(processor.getProcessorIdentifier().getStepping())
+                .microarchitecture(processor.getProcessorIdentifier().getMicroarchitecture())
+                .vendor(processor.getProcessorIdentifier().getVendor())
+                .vendorFrequency(processor.getProcessorIdentifier().getVendorFreq())
+                .logicalProcessors(processor.getLogicalProcessorCount())
+                .physicalPackages(processor.getPhysicalPackageCount())
+                .physicalCores(processor.getPhysicalProcessorCount())
+                .build();
     }
 }
