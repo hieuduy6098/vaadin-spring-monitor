@@ -9,6 +9,7 @@ public class QuestionConstant {
     public final static String q2 = "get cpu info";
     public final static String q3 = "get ram info";
     public final static String q4 = "get disk info";
+    public final static String q5 = "get network info";
 
     public static List<String> getAllQuestion() {
         List<String> questions = new ArrayList<>();

@@ -33,7 +33,6 @@ public class ChatView extends VerticalLayout {
     private MessageInput input;
 
     public ChatView() {
-
         addClassNames("chat-view", Width.FULL, Display.FLEX, Flex.AUTO);
         setSpacing(false);
 
@@ -44,7 +43,7 @@ public class ChatView extends VerticalLayout {
         input.setWidthFull();
 
         // Nút Clear Chat
-        Button clearButton = new Button("Xóa đoạn chat", new Icon(VaadinIcon.TRASH));
+        Button clearButton = new Button("Delete chat", new Icon(VaadinIcon.TRASH));
         clearButton.addClickListener(e -> clearChat());
 
         add(clearButton, list, input);

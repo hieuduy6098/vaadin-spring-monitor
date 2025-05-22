@@ -1,5 +1,6 @@
 package com.az1.app.service;
 
+import com.az1.app.model.MemModel;
 import org.springframework.stereotype.Service;
 import oshi.hardware.GlobalMemory;
 import oshi.software.os.OSProcess;
@@ -19,22 +20,27 @@ public class MemService extends ServerService {
      *
      * @return A string containing total memory, used memory, available memory, and usage percentage.
      */
-    public String getMemoryUsageString() {
+    public MemModel getMemoryInfo() {
         long totalMemory = memory.getTotal();
         long availableMemory = memory.getAvailable();
         long usedMemory = totalMemory - availableMemory;
         double usagePercentage = (double) usedMemory / totalMemory * 100;
 
-        return String.format(
-                "--- Memory Usage ---\n" +
-                        "Total Memory: %s\n" +
-                        "Used Memory: %s (%.2f%%)\n" +
-                        "Available Memory: %s",
-                formatSize(totalMemory),
-                formatSize(usedMemory),
-                usagePercentage,
-                formatSize(availableMemory)
-        );
+//        return String.format(
+//                "--- Memory Usage ---\n" +
+//                        "Total Memory: %s\n" +
+//                        "Used Memory: %s (%.2f%%)\n" +
+//                        "Available Memory: %s",
+//                formatSize(totalMemory),
+//                formatSize(usedMemory),
+//                usagePercentage,
+//                formatSize(availableMemory)
+//        );
+        return MemModel.builder()
+                .totalMemory(formatSize(totalMemory))
+                .usedMemory(formatSize(usedMemory))
+                .availableMemory(formatSize(availableMemory))
+                .build();
     }
 
     /**

@@ -1,42 +1,34 @@
 package com.az1.app.service;
 
-import org.springframework.stereotype.Service;
+import com.az1.app.model.NetworkModel;
 import oshi.hardware.NetworkIF;
 
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
-public class InternetService extends ServerService {
+public class NetworkService extends ServerService {
     /**
      * Retrieves detailed information about all available network interfaces.
      *
      * @return A string containing information about the network interfaces.
      */
-    public String getNetworkInterfacesInfo() {
-        StringBuilder result = new StringBuilder();
-
-        for (NetworkIF net : hardware.getNetworkIFs()) {
-            result.append("Device Name: ").append(net.getName()).append("\n");
-            result.append("Display Name: ").append(net.getDisplayName()).append("\n");
-            result.append("Speed: ").append(net.getSpeed()).append(" bits/s\n");
-            result.append("MTU: ").append(net.getMTU()).append("\n");
-            result.append("MAC Address: ").append(net.getMacaddr()).append("\n");
-
-            // IP addresses
-            result.append("IPv4 Addresses: ").append(String.join(", ", net.getIPv4addr())).append("\n");
-            result.append("IPv6 Addresses: ").append(String.join(", ", net.getIPv6addr())).append("\n");
-
-            // Traffic statistics
-            result.append("Packets Received: ").append(net.getPacketsRecv()).append("\n");
-            result.append("Packets Sent: ").append(net.getPacketsSent()).append("\n");
-            result.append("Data Received: ").append(net.getBytesRecv()).append(" bytes\n");
-            result.append("Data Sent: ").append(net.getBytesSent()).append(" bytes\n");
-
-            result.append("------------------------------\n");
-        }
-
-        return result.toString();
+    public List<NetworkModel> getNetworkInfo() {
+        return hardware.getNetworkIFs().stream()
+                .map(nw -> NetworkModel.builder()
+                        .deviceName(nw.getName())
+                        .displayName(nw.getDisplayName())
+                        .speed(nw.getSpeed())
+                        .mtu(nw.getMTU())
+                        .MACAddress(nw.getMacaddr())
+                        .IPv4Addresses(String.join(", ", nw.getIPv4addr()))
+                        .IPv6Addresses(String.join(", ", nw.getIPv6addr()))
+                        .packetsReceived(nw.getPacketsRecv())
+                        .packetsSent(nw.getPacketsSent())
+                        .dataReceived(nw.getBytesRecv())
+                        .dataSent(nw.getBytesSent())
+                        .build())
+                .toList();
     }
 
     /**
