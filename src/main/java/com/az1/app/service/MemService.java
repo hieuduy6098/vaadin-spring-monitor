@@ -26,21 +26,24 @@ public class MemService extends ServerService {
         long usedMemory = totalMemory - availableMemory;
         double usagePercentage = (double) usedMemory / totalMemory * 100;
 
-//        return String.format(
-//                "--- Memory Usage ---\n" +
-//                        "Total Memory: %s\n" +
-//                        "Used Memory: %s (%.2f%%)\n" +
-//                        "Available Memory: %s",
-//                formatSize(totalMemory),
-//                formatSize(usedMemory),
-//                usagePercentage,
-//                formatSize(availableMemory)
-//        );
         return MemModel.builder()
                 .totalMemory(formatSize(totalMemory))
                 .usedMemory(formatSize(usedMemory))
                 .availableMemory(formatSize(availableMemory))
                 .build();
+    }
+
+    public float getMemUsage() {
+        long totalMemory = memory.getTotal();
+        long availableMemory = memory.getAvailable();
+        long usedMemory = totalMemory - availableMemory;
+
+        // Tính tỷ lệ phần trăm với phép chia số thực
+        float usagePercentage = ((float) usedMemory / (float) totalMemory) * 100;
+
+        // Làm tròn đến 2 chữ số thập phân
+
+        return Math.round(usagePercentage * 100) / 100.0f;
     }
 
     /**

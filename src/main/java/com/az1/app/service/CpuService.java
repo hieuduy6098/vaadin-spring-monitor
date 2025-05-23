@@ -128,4 +128,40 @@ public class CpuService extends ServerService {
                 .physicalCores(processor.getPhysicalProcessorCount())
                 .build();
     }
+
+    public float getCpuUsage() {
+        // Đo lần đầu
+        long[] prevTicks = processor.getSystemCpuLoadTicks();
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
+        // Đo lần thứ hai
+        long[] ticks = processor.getSystemCpuLoadTicks();
+
+        // Tính chênh lệch giữa các loại tick
+        long nice = ticks[CentralProcessor.TickType.NICE.ordinal()] - prevTicks[CentralProcessor.TickType.NICE.ordinal()];
+        long irq = ticks[CentralProcessor.TickType.IRQ.ordinal()] - prevTicks[CentralProcessor.TickType.IRQ.ordinal()];
+        long softIrq = ticks[CentralProcessor.TickType.SOFTIRQ.ordinal()] - prevTicks[CentralProcessor.TickType.SOFTIRQ.ordinal()];
+        long steal = ticks[CentralProcessor.TickType.STEAL.ordinal()] - prevTicks[CentralProcessor.TickType.STEAL.ordinal()];
+        long cSys = ticks[CentralProcessor.TickType.SYSTEM.ordinal()] - prevTicks[CentralProcessor.TickType.SYSTEM.ordinal()];
+        long user = ticks[CentralProcessor.TickType.USER.ordinal()] - prevTicks[CentralProcessor.TickType.USER.ordinal()];
+        long iowait = ticks[CentralProcessor.TickType.IOWAIT.ordinal()] - prevTicks[CentralProcessor.TickType.IOWAIT.ordinal()];
+        long idle = ticks[CentralProcessor.TickType.IDLE.ordinal()] - prevTicks[CentralProcessor.TickType.IDLE.ordinal()];
+
+        long totalCpu = user + nice + cSys + irq + softIrq + steal + iowait + idle;
+
+        if (totalCpu == 0) {
+            return 0.0f;
+        }
+
+        // Tính phần trăm CPU đang được sử dụng, chuyển sang float
+        float cpuUsagePercent = ((user + nice + cSys + irq + softIrq + steal) * 100.0f) / totalCpu;
+
+        // Làm tròn đến 2 chữ số thập phân
+
+        return Math.round(cpuUsagePercent * 100) / 100.0f;
+    }
 }

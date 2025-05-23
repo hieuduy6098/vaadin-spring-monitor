@@ -17,6 +17,7 @@ public class BotService {
     private final MemService memService = new MemService();
     private final DiskService diskService = new DiskService();
     private final NetworkService networkService = new NetworkService();
+    private final ApiHandleService apiHandleService = new ApiHandleService();
 
     public MessageListItem getBotResponse(MessageListItem userMessage) {
         String userText = userMessage.getText().toLowerCase();
@@ -24,27 +25,32 @@ public class BotService {
 
         switch (userText) {
             case QuestionConstant.q1:
-                ServerModel osInfo = serverService.getOsInfo();
-                reply = osInfo.toString();
+                reply = serverService.getOsInfo().toString();
                 break;
             case QuestionConstant.q2:
-                CpuModel cpuInfo = cpuService.getCpuInfo();
-                reply = cpuInfo.toString();
+                reply = cpuService.getCpuInfo().toString();
                 break;
             case QuestionConstant.q3:
-                MemModel memInfo = memService.getMemoryInfo();
-                reply = memInfo.toString();
+                reply = memService.getMemoryInfo().toString();
                 break;
             case QuestionConstant.q4:
-                List<DiskModel> diskInfo = diskService.getDiskInfo();
-                reply = diskInfo.stream()
+                reply = diskService.getDiskInfo().stream()
                         .map(DiskModel::toString)
                         .collect(Collectors.joining("\n"));
                 break;
             case QuestionConstant.q5:
-                List<NetworkModel> networkInfo = networkService.getNetworkInfo();
-                reply = networkInfo.stream()
+                reply = networkService.getNetworkInfo().stream()
                         .map(NetworkModel::toString)
+                        .collect(Collectors.joining("\n"));
+                break;
+            case QuestionConstant.q6:
+                reply = apiHandleService.getStations().stream()
+                        .map(StationModel::toString)
+                        .collect(Collectors.joining("\n"));
+                break;
+            case QuestionConstant.q7:
+                reply = apiHandleService.getStations().stream()
+                        .map(StationModel::getName)
                         .collect(Collectors.joining("\n"));
                 break;
             default:

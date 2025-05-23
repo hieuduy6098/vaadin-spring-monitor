@@ -10,6 +10,8 @@ public class QuestionConstant {
     public final static String q3 = "get ram info";
     public final static String q4 = "get disk info";
     public final static String q5 = "get network info";
+    public final static String q6 = "get stations info environment";
+    public final static String q7 = "get stations name environment";
 
     public static List<String> getAllQuestion() {
         List<String> questions = new ArrayList<>();

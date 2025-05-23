@@ -24,7 +24,7 @@ import java.util.UUID;
 
 @PageTitle("Chat")
 @Route("chat")
-@Menu(order = 0, icon = LineAwesomeIconUrl.COMMENTS)
+@Menu(order = 1, icon = LineAwesomeIconUrl.COMMENTS)
 public class ChatView extends VerticalLayout {
     private final ChatService chatService = new ChatService();
     private final BotService botService = new BotService();
