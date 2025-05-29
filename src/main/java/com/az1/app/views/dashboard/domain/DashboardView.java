@@ -52,7 +52,6 @@ public class DashboardView extends VerticalLayout {
     public void startAutoUpdate(){
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
         scheduler.scheduleAtFixedRate(() -> {
-            System.out.println("start update table");
             ui.access(() -> {
                 try {
                     System.out.println(ui.getUIId());

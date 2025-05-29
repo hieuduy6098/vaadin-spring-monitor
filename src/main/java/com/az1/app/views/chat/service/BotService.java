@@ -66,4 +66,12 @@ public class BotService {
 
         return new MessageListItem(reply, Instant.now(), "Chat Bot","./icons/logo.jpg");
     }
+
+
+    // func call api get response from api ai
+    public MessageListItem getAiResponse(MessageListItem userMessage){
+        String userText = userMessage.getText().toLowerCase();
+        String reply = apiHandleService.getResponseAi(userText);
+        return new MessageListItem(reply, Instant.now(), "Chat Bot","./icons/logo.jpg");
+    }
 }

@@ -1,10 +1,13 @@
 package com.az1.app.service;
 
+import com.az1.app.model.AssistantRequestModel;
+import com.az1.app.model.BaseResponseModel;
 import com.az1.app.model.StationModel;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -17,12 +20,12 @@ import java.util.List;
 
 @Service
 public class ApiHandleService {
-    private String accessToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJleHAiOjE3NDgyNzM2OTEsInNjb3BlIjpbIlNZU1RFTS5TRU5ETUFJTCIsIkNBTUVSQS5FRElUIiwiU1lTVEVNLkVESVQiLCJVU0VSUy5FRElUIiwiVVNFUlMuVklFVyIsIlNZU1RFTS5WSUVXIiwiRVhDRUwuRVhQT1JUIiwiVVNFUi5QVUJMSUMiXSwicm9sZSI6WyJDQlRUX01UIiwiTVRfQURNSU4iXSwidXNlcl9uYW1lIjoiYWRtaW4iLCJqdGkiOiIyNmRhNzdmYS0wOTZiLTRiZTYtOWEwOC03NjQxODNkNTgwYWEifQ.gEcy3RSpjv7721LIPWwHu1hkBMXMePAxEpEwc0O9oz63VLULl8jlUJgRr_bLgEZuQfGTq2lVzY7a1qovPBldFrY5KfNHsqDJm0OGvRqtySgyZxbQCZVV6Fum3OBdWbElJ6NZROZ60W7YgChyGY0Qun8-8C-rXccjqTH0ZSh3iYREx4g0nOx5U21qYSqXVRJL2UCbkT9Qi4niGFjGsy9Kb-oKg6_m9BulU4ymzdyZmBksI8SfYio0VSAPBb-PzgBBjyF9iMP6ExEji32ewm-uPsUpgexWgjYma-WmUS2lqYo33gzwNPf6J2a5GVGg3zBPAyWPP1Wwke3NIX2xgSZgmQ";
-
-//    @PostConstruct
-//    public void init() {
-//        updateToken();
-//    }
+//    private String accessToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJleHAiOjE3NDgyNzM2OTEsInNjb3BlIjpbIlNZU1RFTS5TRU5ETUFJTCIsIkNBTUVSQS5FRElUIiwiU1lTVEVNLkVESVQiLCJVU0VSUy5FRElUIiwiVVNFUlMuVklFVyIsIlNZU1RFTS5WSUVXIiwiRVhDRUwuRVhQT1JUIiwiVVNFUi5QVUJMSUMiXSwicm9sZSI6WyJDQlRUX01UIiwiTVRfQURNSU4iXSwidXNlcl9uYW1lIjoiYWRtaW4iLCJqdGkiOiIyNmRhNzdmYS0wOTZiLTRiZTYtOWEwOC03NjQxODNkNTgwYWEifQ.gEcy3RSpjv7721LIPWwHu1hkBMXMePAxEpEwc0O9oz63VLULl8jlUJgRr_bLgEZuQfGTq2lVzY7a1qovPBldFrY5KfNHsqDJm0OGvRqtySgyZxbQCZVV6Fum3OBdWbElJ6NZROZ60W7YgChyGY0Qun8-8C-rXccjqTH0ZSh3iYREx4g0nOx5U21qYSqXVRJL2UCbkT9Qi4niGFjGsy9Kb-oKg6_m9BulU4ymzdyZmBksI8SfYio0VSAPBb-PzgBBjyF9iMP6ExEji32ewm-uPsUpgexWgjYma-WmUS2lqYo33gzwNPf6J2a5GVGg3zBPAyWPP1Wwke3NIX2xgSZgmQ";
+    private String accessToken;
+    @PostConstruct
+    public void init() {
+        updateToken();
+    }
 //    @PostConstruct
     public void updateToken(){
         try {
@@ -61,7 +64,7 @@ public class ApiHandleService {
             this.accessToken = null;
         }
     }
-    @PostConstruct
+//    @PostConstruct
     public List<StationModel> getStations(){
         if (this.accessToken == null || this.accessToken.isEmpty()) {
             System.err.println("Token không hợp lệ.");
@@ -89,6 +92,43 @@ public class ApiHandleService {
         } catch (Exception ex) {
             System.err.println("Lỗi tổng quát: " + ex.getMessage());
             return new ArrayList<>();
+        }
+    }
+
+    public String getResponseAi(String message){
+//        if (this.accessToken == null || this.accessToken.isEmpty()) {
+//            this.updateToken();
+//        }
+        HttpHeaders headers = new HttpHeaders();
+//        headers.setBearerAuth(this.accessToken);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        AssistantRequestModel bodyData = new AssistantRequestModel(message);
+        HttpEntity<AssistantRequestModel> entity = new HttpEntity<>(bodyData,headers);
+        RestTemplate restTemplate = new RestTemplate();
+        String url = "http://localhost:9000/api/test";
+
+        try {
+            ResponseEntity<BaseResponseModel<String>> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.POST,
+                    entity,
+                    new ParameterizedTypeReference<BaseResponseModel<String>>() {}
+            );
+
+            BaseResponseModel<String> responseMessage = response.getBody();
+            assert responseMessage != null;
+            return responseMessage.getData();
+//            ObjectMapper mapper = new ObjectMapper();
+//            JsonNode rootNode = mapper.readTree(response.getBody());
+//            JsonNode dataNode = rootNode.get("data").get("items");
+
+        } catch (HttpClientErrorException | HttpServerErrorException ex) {
+            System.err.println("Lỗi gọi API: " + ex.getStatusCode());
+            System.err.println("Phản hồi lỗi: " + ex.getResponseBodyAsString());
+            return "";
+        } catch (Exception ex) {
+            System.err.println("Lỗi tổng quát: " + ex.getMessage());
+            return "";
         }
     }
 }
