@@ -19,4 +19,8 @@ public class BotService {
         String reply = apiHandleService.getResponseAi(userText);
         return new MessageListItem(reply, Instant.now(), "Chat Bot","./icons/logo.jpg");
     }
+
+    public MessageListItem getAiLoadingResponse(){
+        return new MessageListItem("Bot is typing", Instant.now(), "Chat Bot", "./icons/logo.jpg");
+    }
 }

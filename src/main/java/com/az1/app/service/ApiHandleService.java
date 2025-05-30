@@ -30,17 +30,16 @@ public class ApiHandleService {
             );
 
             BaseResponseModel<String> responseMessage = response.getBody();
-            assert responseMessage != null;
-            return responseMessage.getData();
+            return responseMessage != null ? responseMessage.getData() : "";
 
         } catch (HttpClientErrorException | HttpServerErrorException ex) {
             System.err.println("Lỗi gọi API: " + ex.getStatusCode());
             System.err.println("Phản hồi lỗi: " + ex.getResponseBodyAsString());
-            return "";
+            return ex.getResponseBodyAsString();
         }
         catch (Exception ex) {
             System.err.println("Lỗi tổng quát: " + ex.getMessage());
-            return "";
+            return ex.getMessage();
         }
     }
 }

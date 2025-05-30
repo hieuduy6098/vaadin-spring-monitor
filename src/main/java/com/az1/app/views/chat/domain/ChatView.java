@@ -4,7 +4,6 @@ import com.az1.app.views.chat.service.BotService;
 import com.az1.app.views.chat.service.ChatService;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.messages.MessageInput;
@@ -15,16 +14,17 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Menu;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.theme.lumo.LumoUtility.*;
 import org.vaadin.lineawesome.LineAwesomeIconUrl;
 
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @PageTitle("Chat")
 @Route("chat")
+@RouteAlias("")
 @Menu(order = 1, icon = LineAwesomeIconUrl.COMMENTS)
 public class ChatView extends VerticalLayout {
     private final ChatService chatService = new ChatService();
@@ -32,23 +32,20 @@ public class ChatView extends VerticalLayout {
 
     private MessageList list;
     private MessageInput input;
+    private List<MessageListItem> items;
 
     private final UI ui;
 
     public ChatView() {
-
         this.ui = UI.getCurrent();
-
         addClassNames("chat-view", Width.FULL, Display.FLEX, Flex.AUTO);
         setSpacing(false);
 
         list = new MessageList();
         input = new MessageInput();
-
         list.setSizeFull();
         input.setWidthFull();
 
-        // Nút Clear Chat
         Button clearButton = new Button("Delete chat", new Icon(VaadinIcon.TRASH));
         clearButton.addClickListener(e -> clearChat());
 
@@ -83,7 +80,6 @@ public class ChatView extends VerticalLayout {
     step 2: get response AI from botService (BotService.java)
     step 3: get string text AI response from api (ApiHandleService.java)
     step 4: show AI response
-
      */
     private void handleUserInput(String userInput) {
         if (userInput == null || userInput.trim().isEmpty()) {
@@ -91,32 +87,90 @@ public class ChatView extends VerticalLayout {
         }
 
         // Tạo tin nhắn người dùng
-        MessageListItem newMessage = new MessageListItem(userInput, Instant.now(), "You");
+        MessageListItem newMessage = new MessageListItem(userInput, Instant.now(), "User", "./icons/user.png");
         newMessage.setUserColorIndex(1);
-        newMessage.addClassNames("user-message");
 
-        List<MessageListItem> items = new ArrayList<>(list.getItems());
+        items = new ArrayList<>(list.getItems());
         items.add(newMessage);
         list.setItems(items);
         chatService.saveMessages(items); // Lưu vào session
         scrollToBottom();
 
+        // Tạo tin nhắn "Bot is typing..."
+        MessageListItem loadingMessage = botService.getAiLoadingResponse();
+        loadingMessage.setUserColorIndex(5);
+        items.add(loadingMessage);
+        list.setItems(items);
+        chatService.saveMessages(items);
+        scrollToBottom();
+
         // Xử lý phản hồi của bot trong một luồng riêng
         new Thread(() -> {
+            /*
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
             // Lấy phản hồi từ bot
-//                MessageListItem botReply = botService.getBotResponse(newMessage);
             MessageListItem botReply = botService.getAiResponse(newMessage);
             botReply.setUserColorIndex(5); // Màu khác cho bot
 
             // Cập nhật lại danh sách tin nhắn trên luồng UI
             ui.access(() -> {
-                List<MessageListItem> updatedItems = new ArrayList<>(list.getItems());
-                updatedItems.add(botReply);
-                list.setItems(updatedItems);
-                chatService.saveMessages(updatedItems);
+                int loadingMessageIndex = items.indexOf(loadingMessage);
+                if (loadingMessageIndex != -1) {
+                    // Update the existing loading message with the bot's actual reply
+                    items.set(loadingMessageIndex, botReply);
+                } else {
+                    // Fallback: If for some reason the loading message wasn't found, add the bot reply as a new message
+                    items.add(botReply);
+                }
+                list.setItems(items);
+                chatService.saveMessages(items);
                 scrollToBottom();
             });
+            */
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            StringBuilder currentBotText = new StringBuilder();
+            // Simulate getting response word by word. In a real scenario, this would come from your bot service.
+            // For demonstration, let's assume getAiResponseStream returns words one by one.
+            // You'll need to modify your BotService to provide a streaming capability.
+            // Example: botService.streamAiResponse(userMessage) could return a Stream<String> or a List<String> that you iterate over.
+            String fullBotResponse = botService.getAiResponse(newMessage).getText(); // Get full response for now
+            String[] words = fullBotResponse.split(" "); // Split into words
 
+            for (String word : words) {
+                currentBotText.append(word).append(" ");
+                // Update the bot message on the UI thread
+                ui.access(() -> {
+                    loadingMessage.setText(currentBotText.toString().trim());
+                    // This is crucial: to make Vaadin re-render the specific message item,
+                    // you need to either call setItems again or ideally have a mechanism
+                    // within MessageList that updates a single item.
+                    // For now, re-setting all items is the most straightforward way,
+                    // but for very large chat histories, it might be less performant.
+                    // A more advanced solution might involve custom components or
+                    // deeper integration with Vaadin's data binding.
+                    list.setItems(new ArrayList<>(items)); // Create a new list to trigger update
+                    scrollToBottom();
+                });
+                try {
+                    Thread.sleep(100); // Simulate typing delay
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt(); // Restore interrupt status
+                    break;
+                }
+            }
+
+            // After all words are displayed, save the final state if needed
+            ui.access(() -> {
+                chatService.saveMessages(items);
+            });
         }).start();
     }
 
