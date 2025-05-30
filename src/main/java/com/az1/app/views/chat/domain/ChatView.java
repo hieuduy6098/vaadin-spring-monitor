@@ -137,10 +137,6 @@ public class ChatView extends VerticalLayout {
                 throw new RuntimeException(e);
             }
             StringBuilder currentBotText = new StringBuilder();
-            // Simulate getting response word by word. In a real scenario, this would come from your bot service.
-            // For demonstration, let's assume getAiResponseStream returns words one by one.
-            // You'll need to modify your BotService to provide a streaming capability.
-            // Example: botService.streamAiResponse(userMessage) could return a Stream<String> or a List<String> that you iterate over.
             String fullBotResponse = botService.getAiResponse(newMessage).getText(); // Get full response for now
             String[] words = fullBotResponse.split(" "); // Split into words
 
@@ -149,13 +145,6 @@ public class ChatView extends VerticalLayout {
                 // Update the bot message on the UI thread
                 ui.access(() -> {
                     loadingMessage.setText(currentBotText.toString().trim());
-                    // This is crucial: to make Vaadin re-render the specific message item,
-                    // you need to either call setItems again or ideally have a mechanism
-                    // within MessageList that updates a single item.
-                    // For now, re-setting all items is the most straightforward way,
-                    // but for very large chat histories, it might be less performant.
-                    // A more advanced solution might involve custom components or
-                    // deeper integration with Vaadin's data binding.
                     list.setItems(new ArrayList<>(items)); // Create a new list to trigger update
                     scrollToBottom();
                 });

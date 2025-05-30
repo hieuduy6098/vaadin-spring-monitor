@@ -21,6 +21,6 @@ public class BotService {
     }
 
     public MessageListItem getAiLoadingResponse(){
-        return new MessageListItem("Bot is typing", Instant.now(), "Chat Bot", "./icons/logo.jpg");
+        return new MessageListItem("bot is thinking", Instant.now(), "Chat Bot", "./icons/logo.jpg");
     }
 }
