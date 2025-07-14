@@ -4,6 +4,7 @@ import com.az1.app.views.chat.service.BotService;
 import com.az1.app.views.chat.service.ChatService;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.messages.MessageInput;
@@ -17,6 +18,8 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.theme.lumo.LumoUtility.*;
 import jakarta.annotation.PostConstruct;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.vaadin.lineawesome.LineAwesomeIconUrl;
@@ -37,44 +40,108 @@ public class ChatView extends VerticalLayout {
     private BotService botService;
 
     private MessageList list;
-    private MessageInput input;
+    private CustomMessageInput input;
     private List<MessageListItem> items;
 
+    @Setter
+    @Getter
     private boolean isBotResponse = false;
 
     private final UI ui;
+    private final VerticalLayout contentWrapper;
+    private final Span welcomeLabel;
+
+    @Getter
+    private static ChatView instance;
 
     public ChatView() {
+        instance = this;
         this.ui = UI.getCurrent();
         addClassNames("chat-view", Width.FULL, Display.FLEX, Flex.AUTO);
         setSpacing(false);
 
+        contentWrapper = new VerticalLayout();
+        contentWrapper.setPadding(false);
+        contentWrapper.setSpacing(false);
+        contentWrapper.addClassName("content-wrapper");
+        contentWrapper.setHeightFull();
+        contentWrapper.getStyle().set("padding-bottom", "100px");
+
+        welcomeLabel = new Span("Xin chào! Tôi là trợ lý ảo hỗ trợ tra cứu thông tin, tôi có thể giúp gì cho bạn?");
+        welcomeLabel.getStyle()
+                .set("margin-top", "auto")
+                .set("text-align", "center")
+                .set("padding", "1rem")
+                .set("font-weight", "500")
+                .set("font-family", "'Segoe UI', sans-serif")
+                .set("font-size", "25px");
+
         list = new MessageList();
-        input = new MessageInput();
+        list.getElement().getThemeList().add("custom-scroll");
+        list.setId("message-list");
         list.setSizeFull();
+
+        input = new CustomMessageInput();
         input.setWidthFull();
 
-        Button clearButton = new Button("Delete chat", new Icon(VaadinIcon.TRASH));
+        // Add Delete Chat button
+        Button clearButton = new Button("Xóa đoạn chat", new Icon(VaadinIcon.TRASH));
+        clearButton.addClassNames(Margin.SMALL, FontSize.SMALL);
+        clearButton.getStyle().set("align-self", "flex-end");
         clearButton.addClickListener(e -> clearChat());
 
-        add(clearButton, list, input);
+        contentWrapper.add(clearButton, welcomeLabel, list, input);
+        add(contentWrapper);
         setSizeFull();
         expand(list);
 
         // Khôi phục tin nhắn từ session nếu có
         restoreMessages();
 
-        input.addSubmitListener(submitEvent -> {
-            handleUserInput(submitEvent.getValue());
-        });
+        input.setMessageSendListener(this::handleUserInput);
+
+//        Button clearButton = new Button("Delete chat", new Icon(VaadinIcon.TRASH));
+//        clearButton.addClickListener(e -> clearChat());
+//
+//        add(clearButton, list, input);
+//        setSizeFull();
+//        expand(list);
+//
+//        // Khôi phục tin nhắn từ session nếu có
+//        restoreMessages();
+//
+//        input.addSubmitListener(submitEvent -> {
+//            handleUserInput(submitEvent.getValue());
+//        });
+    }
+
+    private void updateMessageVisibility() {
+        boolean hasMessages = list.getItems() != null && !list.getItems().isEmpty();
+        if (!hasMessages) {
+            contentWrapper.getStyle().set("padding-bottom", "80px");
+        } else {
+            contentWrapper.getStyle().remove("padding-bottom");
+        }
+        list.setVisible(hasMessages);
+        welcomeLabel.setVisible(!hasMessages);
     }
 
     private void restoreMessages() {
         list.setItems(chatService.getMessages());
+        this.updateMessageVisibility();
     }
 
     private void scrollToBottom() {
-        UI.getCurrent().getPage().executeJs("document.querySelector('.chat-view vaadin-message-list').scrollToBottom()");
+        UI.getCurrent().getPage().executeJs(
+                "const list = document.getElementById('message-list');" +
+                        "if (list) {" +
+                        "   list.scrollTo({ top: list.scrollHeight, behavior: 'smooth' });" +
+                        "}"
+        );
+    }
+
+    public void clearChatPublic() {
+        clearChat(); // gọi lại hàm private
     }
 
     private void clearChat() {
@@ -105,11 +172,13 @@ public class ChatView extends VerticalLayout {
         // Tạo tin nhắn người dùng
         MessageListItem newMessage = new MessageListItem(userInput, Instant.now(), "User", "./icons/user.png");
         newMessage.setUserColorIndex(1);
+        newMessage.addClassNames("user");
 
         items = new ArrayList<>(list.getItems());
         items.add(newMessage);
         list.setItems(items);
         chatService.saveMessages(items); // Lưu vào session
+        this.updateMessageVisibility();
         scrollToBottom();
 
         // Tạo tin nhắn "Bot is typing..."
@@ -118,6 +187,7 @@ public class ChatView extends VerticalLayout {
         items.add(loadingMessage);
         list.setItems(items);
         chatService.saveMessages(items);
+        this.updateMessageVisibility();
         scrollToBottom();
 
         // Xử lý phản hồi của bot trong một luồng riêng
@@ -162,6 +232,7 @@ public class ChatView extends VerticalLayout {
                 ui.access(() -> {
                     loadingMessage.setText(currentBotText.toString().trim());
                     list.setItems(new ArrayList<>(items)); // Create a new list to trigger update
+                    this.updateMessageVisibility();
                     scrollToBottom();
                 });
                 try {
@@ -175,16 +246,10 @@ public class ChatView extends VerticalLayout {
             // After all words are displayed, save the final state if needed
             ui.access(() -> {
                 chatService.saveMessages(items);
+                this.updateMessageVisibility();
             });
             this.setBotResponse(false);
         }).start();
     }
 
-    public boolean isBotResponse() {
-        return isBotResponse;
-    }
-
-    public void setBotResponse(boolean botResponse) {
-        isBotResponse = botResponse;
-    }
 }

@@ -23,27 +23,27 @@ public class ApiHandleService {
         AssistantRequestModel bodyData = new AssistantRequestModel(message);
         HttpEntity<AssistantRequestModel> entity = new HttpEntity<>(bodyData,headers);
         RestTemplate restTemplate = new RestTemplate();
-        return urlAi;
-//        try {
-//            ResponseEntity<BaseResponseModel<String>> response = restTemplate.exchange(
-//                    urlAi,
-//                    HttpMethod.POST,
-//                    entity,
-//
-//                    new ParameterizedTypeReference<BaseResponseModel<String>>() {}
-//            );
-//
-//            BaseResponseModel<String> responseMessage = response.getBody();
-//            return responseMessage != null ? responseMessage.getData() : "";
-//
-//        } catch (HttpClientErrorException | HttpServerErrorException ex) {
-//            System.err.println("Lỗi gọi API: " + ex.getStatusCode());
-//            System.err.println("Phản hồi lỗi: " + ex.getResponseBodyAsString());
-//            return ex.getResponseBodyAsString();
-//        }
-//        catch (Exception ex) {
-//            System.err.println("Lỗi tổng quát: " + ex.getMessage());
-//            return ex.getMessage();
-//        }
+
+        try {
+            ResponseEntity<BaseResponseModel<String>> response = restTemplate.exchange(
+                    urlAi,
+                    HttpMethod.POST,
+                    entity,
+
+                    new ParameterizedTypeReference<BaseResponseModel<String>>() {}
+            );
+
+            BaseResponseModel<String> responseMessage = response.getBody();
+            return responseMessage != null ? responseMessage.getData() : "";
+
+        } catch (HttpClientErrorException | HttpServerErrorException ex) {
+            System.err.println("Lỗi gọi API: " + ex.getStatusCode());
+            System.err.println("Phản hồi lỗi: " + ex.getResponseBodyAsString());
+            return ex.getResponseBodyAsString();
+        }
+        catch (Exception ex) {
+            System.err.println("Lỗi tổng quát: " + ex.getMessage());
+            return ex.getMessage();
+        }
     }
 }

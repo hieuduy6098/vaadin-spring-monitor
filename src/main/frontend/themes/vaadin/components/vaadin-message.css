@@ -1,0 +1,13 @@
+:host(.user) {
+  margin-left: auto;
+  border-radius: 20px;
+  padding: 16px 24px;
+  background: rgb(238, 238, 238);;
+  box-shadow: rgba(0, 0, 0, 0.14) 0px 2px 4px, rgba(0, 0, 0, 0.12) 0px 0px 2px;
+  width: fit-content;
+  word-break: break-word;
+}
+
+:host {
+  padding: 16px 24px;
+}

@@ -2,8 +2,12 @@ package com.az1.app.views;
 
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
+import com.vaadin.flow.component.contextmenu.ContextMenu;
 import com.vaadin.flow.component.html.*;
+import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.SvgIcon;
+import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.Scroller;
@@ -37,6 +41,46 @@ public class MainLayout extends AppLayout {
 
         viewTitle = new H1();
         viewTitle.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.Margin.NONE);
+
+        // Tạo icon user
+        Image userIcon = new Image("./icons/user.png", "User");
+        userIcon.setWidth("36px");
+        userIcon.setHeight("36px");
+        userIcon.getStyle().set("margin-right", "16px");
+        userIcon.getStyle().set("cursor", "pointer");
+
+        // Tạo ContextMenu khi nhấn vào icon
+        ContextMenu userMenu = new ContextMenu(userIcon);
+        userMenu.setOpenOnClick(true); // mở menu khi click
+
+        Icon settingsIcon = VaadinIcon.COG.create();
+        settingsIcon.getStyle().set("font-size", "0.6rem");
+
+        Span settingsLabel = new Span("Settings");
+        settingsLabel.getStyle().set("font-size", "0.75rem");
+
+        HorizontalLayout settingsItem = new HorizontalLayout(settingsIcon, settingsLabel);
+        settingsItem.setAlignItems(FlexComponent.Alignment.START);
+        settingsItem.setSpacing(true);
+        userMenu.addItem(settingsItem, e -> Notification.show("Settings clicked"));
+
+        Icon logoutIcon = VaadinIcon.SIGN_OUT.create();
+        logoutIcon.getStyle().set("font-size", "0.6rem");
+
+        Span logoutLabel = new Span("Log out");
+        logoutLabel.getStyle().set("font-size", "0.75rem");
+
+        HorizontalLayout logoutItem = new HorizontalLayout(logoutIcon, logoutLabel);
+        logoutItem.setAlignItems(FlexComponent.Alignment.START);
+        logoutItem.setSpacing(true);
+        userMenu.addItem(logoutItem, e -> getUI().ifPresent(ui -> ui.navigate("login")));
+
+        // Tạo layout cho tiêu đề và icon
+        HorizontalLayout headerLayout = new HorizontalLayout(viewTitle, userIcon);
+        headerLayout.setWidthFull();
+        headerLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+        headerLayout.setSpacing(true);
+        headerLayout.expand(viewTitle); // đẩy title chiếm hết phần còn lại
 
         addToNavbar(true, toggle, viewTitle);
     }
