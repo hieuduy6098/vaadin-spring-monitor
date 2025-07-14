@@ -13,7 +13,7 @@ import org.vaadin.lineawesome.LineAwesomeIconUrl;
 import java.util.Map;
 
 @PageTitle("Dashboard")
-@Route("dashboard")
+//@Route("dashboard")
 @Menu(order = 0, icon = LineAwesomeIconUrl.CHART_AREA_SOLID)
 public class DashboardView extends VerticalLayout {
     private final DashboardService dashboardService = new DashboardService();

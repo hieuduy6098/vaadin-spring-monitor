@@ -16,7 +16,12 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.theme.lumo.LumoUtility.*;
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.vaadin.lineawesome.LineAwesomeIconUrl;
+import com.vaadin.flow.component.notification.NotificationVariant;
+
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -28,11 +33,14 @@ import java.util.List;
 @Menu(order = 1, icon = LineAwesomeIconUrl.COMMENTS)
 public class ChatView extends VerticalLayout {
     private final ChatService chatService = new ChatService();
-    private final BotService botService = new BotService();
+    @Autowired
+    private BotService botService;
 
     private MessageList list;
     private MessageInput input;
     private List<MessageListItem> items;
+
+    private boolean isBotResponse = false;
 
     private final UI ui;
 
@@ -85,6 +93,14 @@ public class ChatView extends VerticalLayout {
         if (userInput == null || userInput.trim().isEmpty()) {
             return; // Bỏ qua tin nhắn trống
         }
+        if (isBotResponse){
+            Notification notification = new Notification("Bot đang phản hồi vui lòng đợi", 3000); // 3000 là thời gian hiển thị (ms)
+            notification.addThemeVariants(NotificationVariant.LUMO_CONTRAST);
+            notification.open();
+            return;
+        }
+
+        this.setBotResponse(true);
 
         // Tạo tin nhắn người dùng
         MessageListItem newMessage = new MessageListItem(userInput, Instant.now(), "User", "./icons/user.png");
@@ -160,7 +176,15 @@ public class ChatView extends VerticalLayout {
             ui.access(() -> {
                 chatService.saveMessages(items);
             });
+            this.setBotResponse(false);
         }).start();
     }
 
+    public boolean isBotResponse() {
+        return isBotResponse;
+    }
+
+    public void setBotResponse(boolean botResponse) {
+        isBotResponse = botResponse;
+    }
 }
