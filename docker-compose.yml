@@ -1,0 +1,20 @@
+services:
+  vaadin-web:
+    container_name: vaadin-web
+    image: vaadin-web:1.0
+    restart: unless-stopped
+    volumes:
+      - ./application.properties:/opt/www/application.properties
+      - ./vaadin-1.0.jar:/opt/www/app.jar
+      - ./logs:/opt/www/logs
+    ports:
+      - 8887:9000
+    environment:
+      - JAVA_OPTS=-Xmx1024m -Xms512m
+      - PORT=9000
+    networks:
+      - vaadin 
+
+networks:
+  vaadin:
+    driver: bridge
